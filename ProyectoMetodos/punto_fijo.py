@@ -11,7 +11,7 @@ from math import sin, cos, tan, pi, e
 
 
 # Definición de la función punto_fijo(). 
-def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,iteraciones: int, error: float):
+def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,iteraciones: str, error: float):
     
     # Creación del intervalo, la función y el dominio
     ext_i, ext_d = sp.sympify(extremo_izq), sp.sympify(extremo_der)
@@ -52,28 +52,25 @@ def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,ite
 
     x_actual = 0
     x_anterior = float(x_inicial) if len(x_inicial) != 0 else (extremo_der+extremo_der)/2
+    i = int(iteraciones) if len(iteraciones) != 0 else 100
     contador = 0
-
-    if iteraciones == 0:
-        iteraciones = 100
     
-    while(contador < iteraciones):
+    while(contador < i):
         x_actual = f(x_anterior)
         print(f"#{contador+1}: {x_actual}, error = {abs(x_actual-x_anterior)}")
         if abs(x_actual-x_anterior) <= error:
             print(f"Punto fijo en la iteración #{contador+1} = {x_actual}")
             print("\n")
-            return 0
+            return f"Punto fijo en la iteración #{contador+1} = {x_actual}", x_actual
         x_anterior = x_actual
         contador+=1
     
-    print(f"No se encontró un punto fijo en {contador} iteraciones para la función {funcion} en el intervalo [{extremo_izq},{extremo_der}]")
-    print("\n")
+    return f"No se encontró un punto fijo en {contador} iteraciones para la función {funcion} en el intervalo [{extremo_izq},{extremo_der}]\n", "F"
 
 
 # Llamados de la función
 
 #punto_fijo(input("Ecuación: "),input("Extremo izquierdo del intervalo: "),input("Extremo derecho del intervalo: "),input("Máximo de iteraciones deseadas (opcional): "),input("Error: "))
-punto_fijo("1+e**-x",1,2,"",0,0.00001)
-punto_fijo("1/3*(x**2-1)",-1,1,"",0,0.000001)
-punto_fijo("x**2-2",-1,2,"-0.5",0,0.000001)
+print(punto_fijo("1+e**-x",1,2,"","",0.00001))
+#punto_fijo("1/3*(x**2-1)",-1,1,"","9",0.000001)
+#punto_fijo("x**2-2",-1,2,"-0.5","",0.000001)
