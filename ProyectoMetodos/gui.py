@@ -2,8 +2,7 @@ import os
 import punto_fijo as pf
 import gauss_seidel as gs
 from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt
-#from sympy import sin, cos, tan, pi, euler as e
-from math import e,sin,cos,tan, pi
+from math import exp,sin,cos,tan, pi,e
 import tkinter as tk
 import customtkinter
 
@@ -27,7 +26,7 @@ class App(customtkinter.CTk):
         super().__init__()
 
         self.title("Proyecto final - Métodos numéricos")
-        self.geometry("1220x850")
+        self.geometry("1220x700")
 
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
@@ -334,8 +333,8 @@ class App(customtkinter.CTk):
 
         if type(punto) != str:
             x = pf.symbols('x')
-            fun = pf.lambdify(x,f)
-            grafico = pf.plot(x,lambdify(x,f,'math'),(x,float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
+            fun = pf.lambdify(x, f)
+            grafico = pf.plot(sympify(x, f), (x, float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
             grafico.save("output.png")
             self.grafica_punto_fijo.configure(image=tk.PhotoImage(file=f"{image_path}/output.png"))
         else:
@@ -410,7 +409,7 @@ class App(customtkinter.CTk):
                         print(gs.vectorS)
 
                         self.box_solucion.configure(state="normal")
-                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nx3 = {gs.x3}\nError = {gs.CalcularError}")
+                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nx3 = {gs.x3}\nError = {gs.CalcularError()}")
                         self.box_solucion.configure(state="disabled")
                         
 

@@ -6,7 +6,7 @@
 
 # Importamos las librerías necesarias
 #import sympy as sp
-from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt, plot_implicit
+from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt
 from sympy import sin, cos, tan, pi, euler as e
 
 
