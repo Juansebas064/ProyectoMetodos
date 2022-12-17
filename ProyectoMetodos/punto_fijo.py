@@ -5,21 +5,23 @@
 #
 
 # Importamos las librerías necesarias
-import sympy as sp
-from sympy import Set
-from math import sin, cos, tan, pi, e
+#import sympy as sp
+from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt
+from sympy import sin, cos, tan, pi, euler as e
 
 
 # Definición de la función punto_fijo(). 
-def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,iteraciones: str, error: float):
+def punto_fijo(funcion: str,extremo_izq: str,extremo_der: str,x_inicial: str,iteraciones: str, error: float):
     
+    logs = []
+
     # Creación del intervalo, la función y el dominio
-    ext_i, ext_d = sp.sympify(extremo_izq), sp.sympify(extremo_der)
-    intervalo = sp.Interval(ext_i,ext_d)
-    x = sp.symbols('x')
-    fun = sp.Eq(sp.sympify(funcion),0)  # Esta función se usa para calcular el dominio
-    f = sp.lambdify(x,funcion)  # Esta función se usa para evaluar valores de x en la función
-    dominio = sp.calculus.util.continuous_domain(fun,x,sp.Reals)
+    ext_i, ext_d = float(sympify(extremo_izq,evaluate=True)), float(sympify(extremo_der,evaluate=True))
+    intervalo = Interval(ext_i,ext_d)
+    x = symbols('x')
+    fun = Eq(sympify(funcion),0)  # Esta función se usa para calcular el dominio
+    f = lambdify(x,funcion)  # Esta función se usa para evaluar valores de x en la función
+    dominio = calculus.util.continuous_domain(fun,x,Reals)
 
     # Comprobación teorema de existencia y unicidad de punto fijo
 
@@ -29,19 +31,19 @@ def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,ite
     continua: bool
     if intervalo.is_subset(dominio):
         continua = True
-        print("La función es continua")
+        logs.append("La función es continua")
     else:
-        print("No se puede hacer punto fijo")
-        return "No se puede hacer punto fijo", "F"
+        logs.append("Error: La función no es continua")
+        return logs, ""
 
     # Evaluamos si las imágenes de f en el intervalo están contenidas en el intervalo
     rango_dentro_intervalo: bool
     if (max(f(ext_i),f(ext_d)) <= ext_d) and (min(f(ext_i),f(ext_d)) >= ext_i): 
         rango_dentro_intervalo = True
-        print("Las imágenes están dentro del intervalo")
+        logs.append("Las imágenes están dentro del intervalo")
     else:
-        print("No se puede hacer punto fijo")
-        return "No se puede hacer punto fijo", "F"
+        logs.append("Error: Las imágenes no están dentro del intervalo")
+        return logs, ""
 
     # Unicidad:
 
@@ -51,21 +53,23 @@ def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,ite
     # Calculamos el punto fijo con las iteraciones de la función
 
     x_actual = 0
-    x_anterior = float(x_inicial) if len(x_inicial) != 0 else (extremo_der+extremo_der)/2
+    x_anterior = float(x_inicial) if len(x_inicial) != 0 else (float(ext_i)+float(ext_d))/2
     i = int(iteraciones) if len(iteraciones) != 0 else 100
     contador = 0
+
     
     while(contador < i):
         x_actual = f(x_anterior)
-        print(f"#{contador+1}: {x_actual}, error = {abs(x_actual-x_anterior)}")
+        logs.append(f"#{contador+1}: {x_actual}, error = {abs(x_actual-x_anterior)}\n")
         if abs(x_actual-x_anterior) <= error:
-            print(f"Punto fijo en la iteración #{contador+1} = {x_actual}")
+            logs.append(f"Punto fijo en la iteración #{contador+1} = {x_actual}\n")
             print("\n")
-            return f"Punto fijo en la iteración #{contador+1} = {x_actual}", x_actual
+            return logs, x_actual
         x_anterior = x_actual
         contador+=1
-    
-    return f"No se encontró un punto fijo en {contador} iteraciones para la función {funcion} en el intervalo [{extremo_izq},{extremo_der}]\n", "F"
+    logs.append(f"No se encontró un punto fijo en {contador} iteraciones para la función {funcion} en el intervalo [{extremo_izq},{extremo_der}]\n")
+
+    return logs, "F"
 
 
 # Llamados de la función

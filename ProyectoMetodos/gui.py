@@ -1,11 +1,15 @@
+import os
 import punto_fijo as pf
-from math import sin, cos, tan, pi, e
-import tkinter
+from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt
+from sympy import sin, cos, tan, pi, euler as e
+import tkinter as tk
 import customtkinter
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("blue")
@@ -14,6 +18,7 @@ TITLE_SIZE = 40
 SUBTITLE_SIZE = 23
 STRING_SIZE = 18
 COLUMN_SPAN = 4
+
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -65,7 +70,7 @@ class App(customtkinter.CTk):
 
         self.punto_fijo_title = customtkinter.CTkLabel(master=self.punto_fijo_frame, text="Punto Fijo", compound="center", font=customtkinter.CTkFont(size=TITLE_SIZE, weight="bold"))
 
-        self.punto_fijo_title.grid(row=0, column=0, padx=30, pady=(40,20),columnspan=3)
+        self.punto_fijo_title.grid(row=0, column=0, padx=30, pady=(35,15),columnspan=3)
 
 
         ##############################
@@ -131,10 +136,10 @@ class App(customtkinter.CTk):
         ## Error
 
         self.descripcion_error_entry = customtkinter.CTkLabel(master=self.punto_fijo_frame, text="Cota de error*",compound="center", font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
-        self.descripcion_error_entry.grid(row=12, column=0, padx=30, pady=(10,0),sticky="w")
+        self.descripcion_error_entry.grid(row=12, column=0, padx=30, pady=(0,0),sticky="ws")
 
         self.error_entry = customtkinter.CTkEntry(master=self.punto_fijo_frame,width=170,height=40,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
-        self.error_entry.grid(row=13, column=0, padx=30, pady=(0,0),sticky="w")
+        self.error_entry.grid(row=13, column=0, padx=30, pady=(0,0),sticky="wn")
 
         ##############################
 
@@ -143,11 +148,110 @@ class App(customtkinter.CTk):
         self.calcular_button = customtkinter.CTkButton(master=self.punto_fijo_frame, command=self.calcular_punto_fijo, text="Calcular",font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"),height=40)
         self.calcular_button.grid(row=14, column=0, padx=30, pady=(20,0),sticky="w")
 
-        self.lienzo = customtkinter.CTkCanvas(master=self.punto_fijo_frame)
-        self.lienzo.grid(row=2, column=1,rowspan=14)
+        # Cargar imagen
+        self.imagen_grafica = tk.PhotoImage(file=f"{image_path}/output.png")
 
-        # Create second frame
+        self.grafica_punto_fijo = customtkinter.CTkLabel(master=self.punto_fijo_frame,text="",compound="left",width=400,height=400)
+        self.grafica_punto_fijo.grid(row=2,column=1,padx=0,pady=(40,0),sticky="ew",rowspan=10)
+
+        # Caja de texto para logs
+
+        self.punto_fijo_logs = customtkinter.CTkTextbox(master=self.punto_fijo_frame,font=("Calibri",16))
+        self.punto_fijo_logs.grid(row=12,column=1,padx=0,pady=(10,10),sticky="ew",rowspan=3)
+
+
+
+        ###############
+        # GAUS SEIDEL *************************************************************
+        ###############
+
         self.gauss_seidel_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+
+        #Titulo
+        self.gauss_seidel_tittle = customtkinter.CTkLabel(master=self.gauss_seidel_frame, text="Gauss-Seidel", compound="center", font=customtkinter.CTkFont(size=TITLE_SIZE, weight="bold"))
+
+        self.gauss_seidel_tittle.grid(row=0, column=3, padx=30, pady=(40,20))
+        
+        #Matriz
+        self.matriz_subtittle = customtkinter.CTkLabel(master=self.gauss_seidel_frame, text="Matriz", compound="center", font=customtkinter.CTkFont(size=SUBTITLE_SIZE, weight="normal"))
+         
+        self.matriz_subtittle.grid(row=1, column=0, padx=30, pady=(40,20),columnspan=3)
+
+        #Vector
+        self.vector_subtittle = customtkinter.CTkLabel(master=self.gauss_seidel_frame, text="Vector S", compound="center", font=customtkinter.CTkFont(size=SUBTITLE_SIZE, weight="normal"))
+         
+        self.vector_subtittle.grid(row=1, column=3, padx=30, pady=(40,20))
+
+        #Terminos independientes
+        self.independientes_subtittle = customtkinter.CTkLabel(master=self.gauss_seidel_frame, text="Terminos \nindependientes", compound="center", font=customtkinter.CTkFont(size=SUBTITLE_SIZE, weight="normal"))
+         
+        self.independientes_subtittle.grid(row=1, column=4, padx=30, pady=(20,20))
+
+        #Entrys matriz
+            ##fila 1
+        self.a11_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a11_entry.grid(row=2, column=0, padx=10, pady=10)
+
+        self.a12_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a12_entry.grid(row=2, column=1, padx=10, pady=10)
+
+        self.a13_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a13_entry.grid(row=2, column=2, padx=10, pady=10)
+
+            ##fila 2
+        self.a21_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a21_entry.grid(row=3, column=0, padx=10, pady=10)
+
+        self.a22_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a22_entry.grid(row=3, column=1, padx=10, pady=10)
+
+        self.a23_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a23_entry.grid(row=3, column=2, padx=10, pady=10)
+
+
+            ##fila 3
+        self.a31_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a31_entry.grid(row=4, column=0, padx=10, pady=10)
+
+        self.a32_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a32_entry.grid(row=4, column=1, padx=10, pady=10)
+
+        self.a33_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.a33_entry.grid(row=4, column=2, padx=10, pady=10)
+
+        #Entrys vector
+        self.v1_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.v1_entry.grid(row=2, column=3, padx=10, pady=10)
+
+        self.v2_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.v2_entry.grid(row=3, column=3, padx=10, pady=10)
+
+        self.v3_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.v3_entry.grid(row=4, column=3, padx=10, pady=10)
+
+        #Entrys terminos independientes
+        self.t1_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.t1_entry.grid(row=2, column=4, padx=10, pady=10)
+
+        self.t2_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.t2_entry.grid(row=3, column=4, padx=10, pady=10)
+
+        self.t2_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.t2_entry.grid(row=4, column=4, padx=10, pady=10)
+
+        #Text box
+        self.box_solucion = customtkinter.CTkTextbox(master=self.gauss_seidel_frame, width=300, height=200, state="disabled")
+        self.box_solucion.grid(row=5, column=0, padx=10, pady=20, columnspan=3,sticky="ew")
+
+        #Combo box
+        self.combo_esquema = customtkinter.CTkComboBox(master=self.gauss_seidel_frame, width=100, height=30,hover=True,values=["3x3","2x2"],command=self.fun_cbox_gs)
+        self.combo_esquema.grid(row=5, column=3, padx=10, pady=20)
+
+        #Boton calcular
+        self.gs_boton_calcular = customtkinter.CTkButton(master=self.gauss_seidel_frame,width=100,height=30,)
+
+
+        #**************************************************************************
 
         # Create third frame
         self.biseccion_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -155,25 +259,38 @@ class App(customtkinter.CTk):
         # Select default frame
         self.select_frame_by_name("punto_fijo")
 
-    def evaluar_funcion(self,x):
-        return eval (self.funcion_entry.get())
-
     def calcular_punto_fijo(self):
         f = self.funcion_entry.get()
-        ext_i = int(self.ext_i_entry.get())
-        ext_d = int(self.ext_d_entry.get())
+        ext_i = self.ext_i_entry.get()
+        ext_d = self.ext_d_entry.get()
         x_inicial = self.x_inicial_entry.get()
         iteraciones = self.iteraciones_entry.get()
         error = float(self.error_entry.get())
         
-        mensaje, punto = pf.punto_fijo(f,ext_i,ext_d,x_inicial,iteraciones,error)
-        print(mensaje,punto)
-        
-        figura = plt.Figure(figsize=(5,4))
-        graph = np.linspace(ext_i,ext_d,1000)
-        figura.add_subplot(111).plot(graph,self.evaluar_funcion(graph))
-        chart = FigureCanvasTkAgg(figura, self.lienzo)
-        chart.get_tk_widget().pack()
+        logs, punto = pf.punto_fijo(f,ext_i,ext_d,x_inicial,iteraciones,error)
+
+        self.punto_fijo_logs.configure(state="normal")
+        self.punto_fijo_logs.delete("1.0","end")
+
+        if type(punto) != str:
+            x = pf.symbols('x')
+            fun = pf.lambdify(x,f)
+            grafico = pf.plot(x,f,(x,float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
+            grafico.save("output.png")
+            self.grafica_punto_fijo.configure(image=tk.PhotoImage(file=f"{image_path}/output.png"))
+        else:
+            self.grafica_punto_fijo.configure(image=None)
+
+        for i in range(len(logs)):
+            self.punto_fijo_logs.insert(f"{i+1}.0",logs[i])
+            self.punto_fijo_logs.insert(tk.END,"\n")
+            print(logs[i])
+        self.punto_fijo_logs.configure(state="disabled")
+
+
+    #***Funcion combo box gauss-seidel
+    def fun_cbox_gs(self,choice):
+        print(choice)
 
 
     def select_frame_by_name(self, name):
@@ -187,7 +304,7 @@ class App(customtkinter.CTk):
             self.punto_fijo_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.punto_fijo_frame.grid_forget()
-        if name == "frame_2":
+        if name == "gauss_seidel":
             self.gauss_seidel_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.gauss_seidel_frame.grid_forget()
