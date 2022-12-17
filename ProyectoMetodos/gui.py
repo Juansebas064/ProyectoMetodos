@@ -282,7 +282,7 @@ class App(customtkinter.CTk):
         if type(punto) != str:
             x = pf.symbols('x')
             fun = pf.lambdify(x,f)
-            grafico = pf.plot(x,f,(x,float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
+            grafico = pf.plot(x,sympify(x,f),(x,float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
             grafico.save("output.png")
             self.grafica_punto_fijo.configure(image=tk.PhotoImage(file=f"{image_path}/output.png"))
         else:
