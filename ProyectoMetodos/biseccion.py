@@ -5,10 +5,11 @@ import customtkinter
 import matplotlib.pyplot as plt
 import numpy as np
 from tkinter import *
+from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from math import e,sin,cos,tan, pi
 
-customtkinter.set_appearance_mode("Light")
+customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
 
 
@@ -24,7 +25,9 @@ class App(customtkinter.CTk):
         self.ecuacion = ""
         self.Xa = 0.0
         self.Xb = 0.0
+        self.puntoMedio=0.0
         self.iteraciones = 0
+        self.error=0.0
         self.f_c = 999999
         self.lst = []
 
@@ -52,15 +55,12 @@ class App(customtkinter.CTk):
 
         # main frame
         self.main_frame = customtkinter.CTkFrame(self, width=600, corner_radius=0)
-        self.main_frame.grid(row=0, column=1, rowspan=4, sticky="nsew")
+        self.main_frame.grid(row=0, column=1, rowspan=4, sticky="nsew", padx=25)
 
         # table internal table frame
 
-        self.table_frame = customtkinter.CTkFrame(self.main_frame, height=400)
-        self.table_frame.grid(row=1, column=4, sticky="nsew")
-        self.table_scroll = customtkinter.CTkScrollbar(self.table_frame)
-        self.table_scroll.grid(row=0, column=0, sticky="ns")
-        self.table_frame.configure(self.table_scroll)
+        self.table_frame = customtkinter.CTkFrame(self.main_frame, height=400, width=80)
+        self.table_frame.grid(row=2, column=4, padx=25)
 
 
 
@@ -81,8 +81,11 @@ class App(customtkinter.CTk):
         self.entry_ok.grid(row=5, column=0, pady=10, padx=10)
 
 
+
+        self.grafico_t = customtkinter.CTkLabel(self.main_frame,height=17, text="Gráfico", font=customtkinter.CTkFont(size=15, weight="bold"))
+        self.grafico_t.grid(row=1, column=0, sticky="nw")
         self.grafico = customtkinter.CTkCanvas(self.main_frame)
-        self.grafico.grid(row=1, column=0)
+        self.grafico.grid(row=2, column=0)
         ###
 
 
@@ -110,45 +113,49 @@ class App(customtkinter.CTk):
         return eval (self.ecuacion)
 
     def evaluacion(self):
+        self.lst += [("Iteraciones", "An", "Bn", "Pn", "F(Pn)", "Error")]
         graphic = plt.Figure(figsize=(5,4))
         graph = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
         graphic.add_subplot(111).plot(graph, self.funcion(graph))
-        graphic.set_label("Grafico")
         chart = FigureCanvasTkAgg(graphic, self.grafico)
         chart.get_tk_widget().pack()
         while abs(self.f_c) >= self.tolerancia:
-            puntoMedio = (self.Xa + self.Xb) / 2
+            raizA = self.puntoMedio
+            self.puntoMedio = (self.Xa + self.Xb) / 2
             f_a = self.funcion(self.Xa)
             f_b = self.funcion(self.Xb)
-            self.f_c = self.funcion(puntoMedio)
-
+            self.f_c = self.funcion(self.puntoMedio)
+            self.error=(abs((self.puntoMedio - raizA)/self.puntoMedio))
             self.iteraciones += 1
-            print("Xa: ", self.Xa, "Xb: ", self.Xb, "c: ", puntoMedio, "f_c", self.f_c, "Número de iteraciones: ", self.iteraciones)
-            self.lst += [(self.iteraciones, self.Xa, self.Xb, puntoMedio, self.f_c)]
+            print("Xa: ", self.Xa, "Xb: ", self.Xb, "c: ", self.puntoMedio, "f_c", self.f_c, "Número de iteraciones: ", self.iteraciones)
+            self.lst += [(self.iteraciones, self.Xa, self.Xb, self.puntoMedio, self.f_c, self.error)]
 
             if (f_a * self.f_c) < 0:
-                self.Xb = puntoMedio
+                self.Xb = self.puntoMedio
             elif (f_b * self.f_c) < 0:
-                self.Xa = puntoMedio
+                self.Xa = self.puntoMedio
             if abs(self.f_c) < self.tolerancia:
                 break
-        print("La raíz buscada es: ", puntoMedio)
+        print("La raíz buscada es: ", self.puntoMedio)
+        self.raizfinal = customtkinter.CTkLabel(self.table_frame, text=("La raíz buscada es aproximadamente: "+ str(self.puntoMedio)))
+        self.raizfinal.grid(row=0, column=0, pady=25, columnspan=7)
 
 
     def Table(self, main):
-        # code for creating table
+        # code for creating
+
         for i in range(self.total_rows):
             for j in range(self.total_columns):
+                self.scrollbar = tk.Scrollbar(orient="horizontal")
                 self.e = Entry(main, width=10, fg='blue',
-                               font=('Arial', 7))
+                             font=('Arial', 7), xscrollcommand=self.scrollbar.set)
+                self.e.focus()
+                self.scrollbar.config(command=self.e.xview)
+                self.e.config()
                 self.e.grid(row=i+1, column=j)
                 self.e.insert(END, self.lst[i][j])
-
-
-
-
-
-
+                self.scrollbar.config(command=self.e.xview)
+                self.e.config()
 
 if __name__ == '__main__':
     app = App()
