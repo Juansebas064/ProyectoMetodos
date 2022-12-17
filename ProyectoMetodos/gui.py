@@ -241,7 +241,7 @@ class App(customtkinter.CTk):
         self.t3_entry.grid(row=4, column=4, padx=10, pady=10)
 
         #Text box
-        self.box_solucion = customtkinter.CTkTextbox(master=self.gauss_seidel_frame, width=300, height=200, state="disabled")
+        self.box_solucion = customtkinter.CTkTextbox(master=self.gauss_seidel_frame, width=300, height=200, state="disabled",font=("Calibri",16))
         self.box_solucion.grid(row=5, column=0, padx=10, pady=20, columnspan=3,sticky="ew")
 
         #Entry tolerancia
@@ -356,8 +356,20 @@ class App(customtkinter.CTk):
                         gs.gauss_seidel()
                         print(gs.vectorS)
 
+                        self.box_solucion.configure(state="normal")
+                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nx3 = {gs.x3}")
+                        self.box_solucion.configure(state="disabled")
+                        
+
+                    else:
+                        print("La matriz debe ser diagonalmente dominante")
+                        self.box_solucion.configure(state="normal")
+                        self.box_solucion.insert("0.0",text="La matriz debe ser diagonalmente dominante")
+                        self.box_solucion.configure(state="disabled")
+
                 else:
                     print("Debe llenar todos los campos de la matriz")
+
 
     def select_frame_by_name(self, name):
         # set button color for selected button
