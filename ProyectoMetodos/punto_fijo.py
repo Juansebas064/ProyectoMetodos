@@ -69,7 +69,7 @@ def punto_fijo(funcion: str,extremo_izq: str,extremo_der: str,x_inicial: str,ite
         contador+=1
     logs.append(f"No se encontró un punto fijo en {contador} iteraciones para la función {funcion} en el intervalo [{extremo_izq},{extremo_der}]\n")
 
-    return logs, "F"
+    return logs, ""
 
 
 # Llamados de la función

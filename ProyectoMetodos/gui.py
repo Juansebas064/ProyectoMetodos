@@ -371,6 +371,10 @@ class App(customtkinter.CTk):
                     print("Debe llenar todos los campos de la matriz")
 
 
+            else:
+                pass
+
+
     def select_frame_by_name(self, name):
         # set button color for selected button
         self.punto_fijo_button.configure(fg_color=("gray75", "gray25") if name == "punto_fijo" else "transparent")
