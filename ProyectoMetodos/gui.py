@@ -6,7 +6,6 @@ from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus
 from math import e,sin,cos,tan, pi
 import tkinter as tk
 import customtkinter
-
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -410,7 +409,7 @@ class App(customtkinter.CTk):
                         print(gs.vectorS)
 
                         self.box_solucion.configure(state="normal")
-                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nx3 = {gs.x3}\nError = {gs.CalcularError}")
+                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nx3 = {gs.x3}\nError = {gs.CalcularError()}")
                         self.box_solucion.configure(state="disabled")
                         
 
@@ -451,7 +450,7 @@ class App(customtkinter.CTk):
                         print(gs.vectorS)
 
                         self.box_solucion.configure(state="normal")
-                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nError = {gs.CalcularError}")
+                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nError = {gs.CalcularError()}")
                         self.box_solucion.configure(state="disabled")
                         
 
