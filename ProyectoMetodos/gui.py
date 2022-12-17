@@ -2,7 +2,8 @@ import os
 import punto_fijo as pf
 import gauss_seidel as gs
 from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt
-from sympy import sin, cos, tan, pi, euler as e
+#from sympy import sin, cos, tan, pi, euler as e
+from math import e,sin,cos,tan, pi
 import tkinter as tk
 import customtkinter
 
@@ -157,7 +158,7 @@ class App(customtkinter.CTk):
 
         # Caja de texto para logs
 
-        self.punto_fijo_logs = customtkinter.CTkTextbox(master=self.punto_fijo_frame,font=("Calibri",16))
+        self.punto_fijo_logs = customtkinter.CTkTextbox(master=self.punto_fijo_frame,font=("Calibri",16),state="disabled")
         self.punto_fijo_logs.grid(row=12,column=1,padx=0,pady=(10,10),sticky="ew",rowspan=3)
 
 
@@ -260,12 +261,64 @@ class App(customtkinter.CTk):
 
         #**************************************************************************
 
-        # Create third frame
+        #############
+        # Bisección #
+        #############
+
+        # configure grid layout (4x4)
         self.biseccion_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        # self.biseccion_frame.grid_columnconfigure(1, weight=1)
+        # self.biseccion_frame.grid_columnconfigure((2, 3), weight=0)
+        # self.biseccion_frame.grid_rowconfigure((0, 1, 2), weight=1)
+
+        self.ecuacion = ""
+        self.Xa = 0.0
+        self.Xb = 0.0
+        self.puntoMedio=0.0
+        self.iteraciones = 0
+        self.error=0.0
+        self.f_c = 999999
+        self.lst = []
+        self.tolerancia = 0.0
+
+        # Create widgets
+        self.logo_biseccion_label = customtkinter.CTkLabel(master=self.biseccion_frame, text="Bisección", font=customtkinter.CTkFont(size=TITLE_SIZE, weight="bold"),compound="center")
+        self.logo_biseccion_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+
+        self.entry_funcion = customtkinter.CTkEntry(master=self.biseccion_frame, placeholder_text="Ingrese la función a evaluar",
+                                                    width=200)
+        self.entry_funcion.grid(row=1, column=0, pady=10, padx=10)
+        self.entry_cotaInferior = customtkinter.CTkEntry(master=self.biseccion_frame, placeholder_text="Ingrese la cota inferior",
+                                                    width=160)
+        self.entry_cotaInferior.grid(row=2, column=0, pady=10, padx=10)
+        self.entry_cotaSuperior = customtkinter.CTkEntry(master=self.biseccion_frame, placeholder_text="Ingrese la cota superior",
+                                                    width=160)
+        self.entry_cotaSuperior.grid(row=3, column=0, pady=10, padx=10)
+        self.entry_tolerancia = customtkinter.CTkEntry(master=self.biseccion_frame, placeholder_text="Ingrese la tolerancia",
+                                                    width=160)
+        self.entry_tolerancia.grid(row=4, column=0, pady=10, padx=10)
+        self.entry_ok = customtkinter.CTkButton(master=self.biseccion_frame, width=85, text="Aceptar", command=self.get_all_biseccion)
+        self.entry_ok.grid(row=5, column=0, pady=10, padx=10)
+        self.entry_reset = customtkinter.CTkButton(master=self.biseccion_frame, width=85, text="Salir",
+                                                command=self.reset_all_fields, state="disabled")
+        self.entry_reset.grid(row=6, column=0, pady=10, padx=10)
+
+        # Grafico
+        self.grafico_t = customtkinter.CTkLabel(self.biseccion_frame,height=17, text="Gráfico", font=customtkinter.CTkFont(size=15, weight="bold"))
+        self.grafico_t.grid(row=1, column=1)
+        self.grafico = customtkinter.CTkCanvas(self.biseccion_frame)
+        self.grafico.grid(row=2, column=1, rowspan=6)
+
+        # Table internal table frame
+
+        self.table_frame = customtkinter.CTkFrame(self.biseccion_frame, height=400, width=80)
+        self.table_frame.grid(row=2, column=4, padx=25,rowspan=6)
 
         # Select default frame
         self.select_frame_by_name("punto_fijo")
 
+
+    # Función botón calcular punto fijo
     def calcular_punto_fijo(self):
         f = self.funcion_entry.get()
         ext_i = self.ext_i_entry.get()
@@ -282,7 +335,7 @@ class App(customtkinter.CTk):
         if type(punto) != str:
             x = pf.symbols('x')
             fun = pf.lambdify(x,f)
-            grafico = pf.plot(x,sympify(x,f),(x,float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
+            grafico = pf.plot(x,lambdify(x,f,'math'),(x,float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
             grafico.save("output.png")
             self.grafica_punto_fijo.configure(image=tk.PhotoImage(file=f"{image_path}/output.png"))
         else:
@@ -419,6 +472,71 @@ class App(customtkinter.CTk):
             self.box_solucion.configure(state="normal")
             self.box_solucion.insert("0.0",text="Debe llenar todos los campos de la matriz")
             self.box_solucion.configure(state="disabled")
+
+
+    # Función biseccion
+    def get_all_biseccion(self):
+        self.ecuacion = self.entry_funcion.get()
+        self.Xa = float(self.entry_cotaInferior.get())
+        self.Xb = float(self.entry_cotaSuperior.get())
+        self.tolerancia = float(self.entry_tolerancia.get())
+        self.evaluacion()
+        self.total_rows = len(self.lst)
+        self.total_columns = len(self.lst[0])
+        self.Table(self.table_frame)
+        self.entry_ok.configure(state="disabled")
+        self.entry_reset.configure(state="normal")
+
+    def funcion(self, x):
+        return eval (self.ecuacion)
+
+    def evaluacion(self):
+        self.lst += [("Iteraciones", "An", "Bn", "Pn", "F(Pn)", "Error")]
+        graphic = plt.Figure(figsize=(5,4))
+        graph = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
+        graphic.add_subplot(111).plot(graph, self.funcion(graph))
+        chart = FigureCanvasTkAgg(graphic, self.grafico)
+        chart.get_tk_widget().pack()
+        while abs(self.f_c) >= self.tolerancia:
+            raizA = self.puntoMedio
+            self.puntoMedio = (self.Xa + self.Xb) / 2
+            f_a = self.funcion(self.Xa)
+            f_b = self.funcion(self.Xb)
+            self.f_c = self.funcion(self.puntoMedio)
+            self.error=(abs((self.puntoMedio - raizA)/self.puntoMedio))
+            self.iteraciones += 1
+            print("Xa: ", self.Xa, "Xb: ", self.Xb, "c: ", self.puntoMedio, "f_c", self.f_c, "Número de iteraciones: ", self.iteraciones)
+            self.lst += [(self.iteraciones, self.Xa, self.Xb, self.puntoMedio, self.f_c, self.error)]
+
+            if (f_a * self.f_c) < 0:
+                self.Xb = self.puntoMedio
+            elif (f_b * self.f_c) < 0:
+                self.Xa = self.puntoMedio
+            if abs(self.f_c) < self.tolerancia:
+                break
+        print("La raíz buscada es: ", self.puntoMedio)
+        self.raizfinal = customtkinter.CTkLabel(self.table_frame, text=("La raíz buscada es aproximadamente: "+ str(self.puntoMedio)))
+        self.raizfinal.grid(row=0, column=0, pady=25, columnspan=7)
+
+
+    def Table(self, main):
+        # code for creating
+
+        for i in range(self.total_rows):
+            for j in range(self.total_columns):
+                self.scrollbar = tk.Scrollbar(orient="horizontal")
+                self.e = tk.Entry(main, width=10, fg='blue',
+                             font=('Arial', 7), xscrollcommand=self.scrollbar.set)
+                self.e.focus()
+                self.scrollbar.config(command=self.e.xview)
+                self.e.config()
+                self.e.grid(row=i+1, column=j)
+                self.e.insert(tk.END, self.lst[i][j])
+                self.scrollbar.config(command=self.e.xview)
+                self.e.config()
+
+    def reset_all_fields(self):
+        self.destroy()
 
     def select_frame_by_name(self, name):
         # set button color for selected button
