@@ -70,7 +70,7 @@ class App(customtkinter.CTk):
 
         self.punto_fijo_title = customtkinter.CTkLabel(master=self.punto_fijo_frame, text="Punto Fijo", compound="center", font=customtkinter.CTkFont(size=TITLE_SIZE, weight="bold"))
 
-        self.punto_fijo_title.grid(row=0, column=0, padx=30, pady=(35,15),columnspan=3)
+        self.punto_fijo_title.grid(row=0, column=0, padx=30, pady=(15,0),columnspan=3)
 
 
         ##############################
@@ -79,14 +79,14 @@ class App(customtkinter.CTk):
         
         self.descripcion_punto_fijo = customtkinter.CTkLabel(master=self.punto_fijo_frame, text="Para calcular el punto fijo, se inserta el g(x) de la función despejada 'g(x) = x'. El número de iteraciones y el valor \ninicial son datos opcionales, ya que por defecto las iteraciones calculadas son 100 y el valor inicial se toma como\n el promedio de los extremos del intervalo, dejar en blanco en caso de no trabajar con ellos.",compound="left", font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
 
-        self.descripcion_punto_fijo.grid(row=1, column=0, padx=30, pady=(20, 0),columnspan=3)
+        self.descripcion_punto_fijo.grid(row=1, column=0, padx=30, pady=(10, 0),columnspan=3)
 
         ##############################
 
         ## Función
 
         self.descripcion_funcion_entry = customtkinter.CTkLabel(master=self.punto_fijo_frame, text="Ingrese la función en Python*",compound="left", font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
-        self.descripcion_funcion_entry.grid(row=2, column=0, padx=30, pady=(40,0),sticky="w")
+        self.descripcion_funcion_entry.grid(row=2, column=0, padx=30, pady=(20,0),sticky="w")
 
         self.funcion_entry = customtkinter.CTkEntry(master=self.punto_fijo_frame,width=200,height=40,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
         self.funcion_entry.grid(row=3, column=0, padx=30, pady=(0,0),sticky="w")
@@ -146,7 +146,7 @@ class App(customtkinter.CTk):
         ## Botón calcular
 
         self.calcular_button = customtkinter.CTkButton(master=self.punto_fijo_frame, command=self.calcular_punto_fijo, text="Calcular",font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"),height=40)
-        self.calcular_button.grid(row=14, column=0, padx=30, pady=(20,0),sticky="w")
+        self.calcular_button.grid(row=14, column=0, padx=30, pady=(10,0),sticky="w")
 
         # Cargar imagen
         # self.imagen_grafica = tk.PhotoImage(file=f"{image_path}/output.png")
@@ -155,12 +155,12 @@ class App(customtkinter.CTk):
         # self.grafica_punto_fijo.grid(row=2,column=1,padx=0,pady=(40,0),sticky="ew",rowspan=10)
 
         self.grafica_punto_fijo = customtkinter.CTkCanvas(self.punto_fijo_frame)
-        self.grafica_punto_fijo.grid(row=2,column=1,padx=0,pady=(40,0),sticky="ew",rowspan=10)
+        self.grafica_punto_fijo.grid(row=2,column=1,padx=0,pady=(40,0),sticky="ew",rowspan=8)
 
         # Caja de texto para logs
 
         self.punto_fijo_logs = customtkinter.CTkTextbox(master=self.punto_fijo_frame,font=("Calibri",16),state="disabled")
-        self.punto_fijo_logs.grid(row=12,column=1,padx=0,pady=(10,10),sticky="ew",rowspan=3)
+        self.punto_fijo_logs.grid(row=10,column=1,padx=0,pady=(10,10),rowspan=5,sticky="ew")
 
 
 
@@ -321,7 +321,6 @@ class App(customtkinter.CTk):
     def evaluar_punto_fijo(self,var):
         return eval(var)
 
-
     # Función botón calcular punto fijo
     def calcular_punto_fijo(self):
         f = self.funcion_entry.get()
@@ -337,16 +336,21 @@ class App(customtkinter.CTk):
         self.punto_fijo_logs.delete("1.0","end")
 
         if type(punto) != str:
+            x = pf.symbols('x')
+            fun = pf.lambdify(x, f)
+            x1 = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
 
-            graphic = plt.Figure(figsize=(5,4))
-            graph = np.linspace(float(ext_i),float(ext_d), 1000)
-            graphic.add_subplot(111).plot(graph, self.evaluar_punto_fijo(graph))
-            chart = FigureCanvasTkAgg(graphic, self.evaluar_punto_fijo)
+            y = list(map(lambda x: fun(x), x1))
+
+            fig = plt.figure(figsize=(4,3))
+            ax = fig.add_subplot(1, 1, 1)
+
+            plt.plot(x1, y)
+            plt.plot(punto, fun(punto), marker="o")
+
+            chart = FigureCanvasTkAgg(fig, self.grafica_punto_fijo)
             chart.get_tk_widget().pack()
 
-
-            # x = pf.symbols('x')
-            # fun = pf.lambdify(x, f)
             # grafico = pf.plot(sympify(x, f), (x, float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
             # grafico.save("output.png")
             # self.grafica_punto_fijo.configure(image=tk.PhotoImage(file=f"{image_path}/output.png"))
