@@ -146,7 +146,9 @@ class App(customtkinter.CTk):
                 break
         print("La raíz buscada es: ", self.puntoMedio)
         self.raizfinal = customtkinter.CTkLabel(self.table_frame, text=("La raíz buscada es aproximadamente: "+ str(self.puntoMedio)))
-        self.raizfinal.grid(row=0, column=0, pady=25, columnspan=7)
+        self.raizfinal.grid(row=0, column=0, pady=10, columnspan=7)
+        self.nIter = customtkinter.CTkLabel(self.table_frame, text=("Iteraciones para encontrar la raíz: " + str(self.iteraciones)))
+        self.raizfinal.grid(row=1, column=0, pady=10, columnspan=7)
 
 
     def Table(self, main):
@@ -160,7 +162,7 @@ class App(customtkinter.CTk):
                 self.e.focus()
                 self.scrollbar.config(command=self.e.xview)
                 self.e.config()
-                self.e.grid(row=i+1, column=j)
+                self.e.grid(row=i+3, column=j)
                 self.e.insert(END, self.lst[i][j])
                 self.scrollbar.config(command=self.e.xview)
                 self.e.config()

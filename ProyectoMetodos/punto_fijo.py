@@ -6,7 +6,7 @@
 
 # Importamos las librerías necesarias
 #import sympy as sp
-from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt
+from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt, plot_implicit
 from sympy import sin, cos, tan, pi, euler as e
 
 
@@ -44,10 +44,6 @@ def punto_fijo(funcion: str,extremo_izq: str,extremo_der: str,x_inicial: str,ite
     else:
         logs.append("Error: Las imágenes no están dentro del intervalo")
         return logs, ""
-
-    # Unicidad:
-
-    # Derivamos f y vemos si existe para todo x en (a,b)
     
 
     # Calculamos el punto fijo con las iteraciones de la función
