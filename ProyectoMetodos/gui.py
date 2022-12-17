@@ -149,9 +149,12 @@ class App(customtkinter.CTk):
         self.calcular_button.grid(row=14, column=0, padx=30, pady=(20,0),sticky="w")
 
         # Cargar imagen
-        self.imagen_grafica = tk.PhotoImage(file=f"{image_path}/output.png")
+        # self.imagen_grafica = tk.PhotoImage(file=f"{image_path}/output.png")
 
-        self.grafica_punto_fijo = customtkinter.CTkLabel(master=self.punto_fijo_frame,text="",compound="left",width=400,height=400)
+        # self.grafica_punto_fijo = customtkinter.CTkLabel(master=self.punto_fijo_frame,text="",compound="left",width=400,height=400)
+        # self.grafica_punto_fijo.grid(row=2,column=1,padx=0,pady=(40,0),sticky="ew",rowspan=10)
+
+        self.grafica_punto_fijo = customtkinter.CTkCanvas(self.punto_fijo_frame)
         self.grafica_punto_fijo.grid(row=2,column=1,padx=0,pady=(40,0),sticky="ew",rowspan=10)
 
         # Caja de texto para logs
@@ -315,6 +318,9 @@ class App(customtkinter.CTk):
         # Select default frame
         self.select_frame_by_name("punto_fijo")
 
+    def evaluar_punto_fijo(self,var):
+        return eval(var)
+
 
     # Función botón calcular punto fijo
     def calcular_punto_fijo(self):
@@ -331,11 +337,19 @@ class App(customtkinter.CTk):
         self.punto_fijo_logs.delete("1.0","end")
 
         if type(punto) != str:
-            x = pf.symbols('x')
-            fun = pf.lambdify(x, f)
-            grafico = pf.plot(sympify(x, f), (x, float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
-            grafico.save("output.png")
-            self.grafica_punto_fijo.configure(image=tk.PhotoImage(file=f"{image_path}/output.png"))
+
+            graphic = plt.Figure(figsize=(5,4))
+            graph = np.linspace(float(ext_i),float(ext_d), 1000)
+            graphic.add_subplot(111).plot(graph, self.evaluar_punto_fijo(graph))
+            chart = FigureCanvasTkAgg(graphic, self.evaluar_punto_fijo)
+            chart.get_tk_widget().pack()
+
+
+            # x = pf.symbols('x')
+            # fun = pf.lambdify(x, f)
+            # grafico = pf.plot(sympify(x, f), (x, float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
+            # grafico.save("output.png")
+            # self.grafica_punto_fijo.configure(image=tk.PhotoImage(file=f"{image_path}/output.png"))
         else:
             self.grafica_punto_fijo.configure(image=None)
 
