@@ -122,10 +122,18 @@ class App(customtkinter.CTk):
 
     def evaluacion(self):
         self.lst += [("Iteraciones", "An", "Bn", "Pn", "F(Pn)", "Error")]
-        graphic = plt.Figure(figsize=(5,4))
-        graph = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
-        graphic.add_subplot(111).plot(graph, self.funcion(graph))
-        chart = FigureCanvasTkAgg(graphic, self.grafico)
+        #graphic = plt.Figure(figsize=(5,4))
+        x1 = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
+
+        y = list(map(lambda x: self.funcion(x), x1))
+
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        plt.plot(x1, y)
+        plt.plot(self.puntoMedio, self.funcion(self.puntoMedio), marker="o")
+
+        chart = FigureCanvasTkAgg(fig, self.grafico)
         chart.get_tk_widget().pack()
         while abs(self.f_c) >= self.tolerancia:
             raizA = self.puntoMedio
