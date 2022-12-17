@@ -47,7 +47,7 @@ class App(customtkinter.CTk):
         # create sidebar frame with widgets
         self.sidebar_frame = customtkinter.CTkFrame(self, width=250, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=6, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(6, weight=1)
+        self.sidebar_frame.grid_rowconfigure(7, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="Bisección",
                                                  font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
@@ -79,6 +79,9 @@ class App(customtkinter.CTk):
         self.entry_tolerancia.grid(row=4, column=0, pady=10, padx=10)
         self.entry_ok = customtkinter.CTkButton(self.sidebar_frame, width=85, text="Aceptar", command=self.get_all_biseccion)
         self.entry_ok.grid(row=5, column=0, pady=10, padx=10)
+        self.entry_reset = customtkinter.CTkButton(self.sidebar_frame, width=85, text="Salir",
+                                                command=self.reset_all_fields, state="disabled")
+        self.entry_reset.grid(row=6, column=0, pady=10, padx=10)
 
 
 
@@ -99,7 +102,12 @@ class App(customtkinter.CTk):
         self.total_rows = len(self.lst)
         self.total_columns = len(self.lst[0])
         self.Table(self.table_frame)
+        self.entry_ok.configure(state="disabled")
+        self.entry_reset.configure(state="normal")
 
+
+    def reset_all_fields(self):
+        self.destroy()
 
 
     def open_input_dialog_event(self):
@@ -160,7 +168,6 @@ class App(customtkinter.CTk):
 if __name__ == '__main__':
     app = App()
     app.mainloop()
-    print("Hola Biseccion")
 
 
 
