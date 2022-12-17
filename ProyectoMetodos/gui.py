@@ -357,7 +357,7 @@ class App(customtkinter.CTk):
                         print(gs.vectorS)
 
                         self.box_solucion.configure(state="normal")
-                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nx3 = {gs.x3}")
+                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nx3 = {gs.x3}\nError = {gs.CalcularError}")
                         self.box_solucion.configure(state="disabled")
                         
 
@@ -369,11 +369,56 @@ class App(customtkinter.CTk):
 
                 else:
                     print("Debe llenar todos los campos de la matriz")
-
+                    self.box_solucion.configure(state="normal")
+                    self.box_solucion.insert("0.0",text="Debe llenar todos los campos de la matriz")
+                    self.box_solucion.configure(state="disabled")
+                    
 
             else:
-                pass
+                if self.a11_entry.get() != "" and self.a12_entry.get() != "" and self.a21_entry.get() != "" and self.a22_entry.get() != "" :
+                    gs.a11 = float(self.a11_entry.get())
+                    gs.a12 = float(self.a12_entry.get())
+                    gs.a21 = float(self.a21_entry.get())
+                    gs.a22 = float(self.a22_entry.get())
 
+                    if self.tolerancia_entry.get() != "" and float(self.tolerancia_entry.get()) > 0:
+                        gs.tolerancia = float(self.tolerancia_entry.get())
+
+                    else:
+                        gs.tolerancia = 0.0001
+
+                    gs.x1 = float(self.v1_entry.get())
+                    gs.x2 = float(self.v2_entry.get())
+
+                    gs.b1 = float(self.t1_entry.get())
+                    gs.b2 = float(self.t2_entry.get())
+
+                    if gs.FunDiagDom2x2 :
+                        gs.gauss_seidel()
+                        print(gs.vectorS)
+
+                        self.box_solucion.configure(state="normal")
+                        self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nError = {gs.CalcularError}")
+                        self.box_solucion.configure(state="disabled")
+                        
+
+                    else:
+                        print("La matriz debe ser diagonalmente dominante")
+                        self.box_solucion.configure(state="normal")
+                        self.box_solucion.insert("0.0",text="La matriz debe ser diagonalmente dominante")
+                        self.box_solucion.configure(state="disabled")
+
+                else:
+                    print("Debe llenar todos los campos de la matriz")
+                    self.box_solucion.configure(state="normal")
+                    self.box_solucion.insert("0.0",text="Debe llenar todos los campos de la matriz")
+                    self.box_solucion.configure(state="disabled")
+
+        else:
+            print("La diagonal no debe tener 0")
+            self.box_solucion.configure(state="normal")
+            self.box_solucion.insert("0.0",text="Debe llenar todos los campos de la matriz")
+            self.box_solucion.configure(state="disabled")
 
     def select_frame_by_name(self, name):
         # set button color for selected button
