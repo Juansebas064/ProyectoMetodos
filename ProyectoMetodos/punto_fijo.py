@@ -32,7 +32,7 @@ def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,ite
         print("La función es continua")
     else:
         print("No se puede hacer punto fijo")
-        return 1
+        return "No se puede hacer punto fijo", "F"
 
     # Evaluamos si las imágenes de f en el intervalo están contenidas en el intervalo
     rango_dentro_intervalo: bool
@@ -41,7 +41,7 @@ def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,ite
         print("Las imágenes están dentro del intervalo")
     else:
         print("No se puede hacer punto fijo")
-        return 1
+        return "No se puede hacer punto fijo", "F"
 
     # Unicidad:
 
@@ -71,6 +71,6 @@ def punto_fijo(funcion: str,extremo_izq: int,extremo_der: int,x_inicial: str,ite
 # Llamados de la función
 
 #punto_fijo(input("Ecuación: "),input("Extremo izquierdo del intervalo: "),input("Extremo derecho del intervalo: "),input("Máximo de iteraciones deseadas (opcional): "),input("Error: "))
-print(punto_fijo("1+e**-x",1,2,"","",0.00001))
+#print(punto_fijo("1+e**-x",1,2,"","",0.00001))
 #punto_fijo("1/3*(x**2-1)",-1,1,"","9",0.000001)
 #punto_fijo("x**2-2",-1,2,"-0.5","",0.000001)

@@ -167,6 +167,7 @@ class App(customtkinter.CTk):
         error = float(self.error_entry.get())
         
         mensaje, punto = pf.punto_fijo(f,ext_i,ext_d,x_inicial,iteraciones,error)
+        print(mensaje,punto)
         
         figura = plt.Figure(figsize=(5,4))
         graph = np.linspace(ext_i,ext_d,1000)
