@@ -20,7 +20,7 @@ b1 = 0
 b2 = 0
 b3 = 0
 
-tolerancia = 0.0000001
+tolerancia = 0.0001
 
 vectorS = []
 

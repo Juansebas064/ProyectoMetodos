@@ -1,5 +1,6 @@
 import os
 import punto_fijo as pf
+import gauss_seidel as gs
 from sympy import Eq, Interval, Reals, Set, lambdify, symbols, sympify, calculus, plot, sqrt
 from sympy import sin, cos, tan, pi, euler as e
 import tkinter as tk
@@ -25,7 +26,7 @@ class App(customtkinter.CTk):
         super().__init__()
 
         self.title("Proyecto final - Métodos numéricos")
-        self.geometry("1200x850")
+        self.geometry("1220x850")
 
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
@@ -236,19 +237,25 @@ class App(customtkinter.CTk):
         self.t2_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
         self.t2_entry.grid(row=3, column=4, padx=10, pady=10)
 
-        self.t2_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
-        self.t2_entry.grid(row=4, column=4, padx=10, pady=10)
+        self.t3_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=35,height=35,font=customtkinter.CTkFont(size=STRING_SIZE, weight="normal"))
+        self.t3_entry.grid(row=4, column=4, padx=10, pady=10)
 
         #Text box
         self.box_solucion = customtkinter.CTkTextbox(master=self.gauss_seidel_frame, width=300, height=200, state="disabled")
         self.box_solucion.grid(row=5, column=0, padx=10, pady=20, columnspan=3,sticky="ew")
 
+        #Entry tolerancia
+        self.tolerancia_entry = customtkinter.CTkEntry(master=self.gauss_seidel_frame,width=100, height=30,font=customtkinter.CTkFont(size=12, weight="normal"), placeholder_text="Tolerancia")
+        self.tolerancia_entry.grid(row=5, column=4, padx=10, pady=20)
+
         #Combo box
-        self.combo_esquema = customtkinter.CTkComboBox(master=self.gauss_seidel_frame, width=100, height=30,hover=True,values=["3x3","2x2"],command=self.fun_cbox_gs)
+        self.combo_esquema = customtkinter.CTkComboBox(master=self.gauss_seidel_frame, width=100, height=30,hover=True,values=["3x3","2x2"],command=self.fun_cbox_gs, justify="center")
         self.combo_esquema.grid(row=5, column=3, padx=10, pady=20)
 
         #Boton calcular
-        self.gs_boton_calcular = customtkinter.CTkButton(master=self.gauss_seidel_frame,width=100,height=30,)
+        self.gs_boton_calcular = customtkinter.CTkButton(master=self.gauss_seidel_frame,width=100,height=30,text="Calcular",command=self.fun_calBoton_gs)
+
+        self.gs_boton_calcular.grid(row=5, column=5,padx=10,pady=20)
 
 
         #**************************************************************************
@@ -290,8 +297,67 @@ class App(customtkinter.CTk):
 
     #***Funcion combo box gauss-seidel
     def fun_cbox_gs(self,choice):
+
+        if choice == "2x2":
+            gs.funcion = 1
+            self.a13_entry.configure(state="disabled")
+            self.a23_entry.configure(state="disabled")
+            self.a33_entry.configure(state="disabled")
+            self.a32_entry.configure(state="disabled")
+            self.a31_entry.configure(state="disabled")
+            self.v3_entry.configure(state="disabled")
+            self.t3_entry.configure(state="disabled")
+
+        elif choice == "3x3":
+            gs.funcion = 0
+            self.a13_entry.configure(state="normal")
+            self.a23_entry.configure(state="normal")
+            self.a33_entry.configure(state="normal")
+            self.a32_entry.configure(state="normal")
+            self.a31_entry.configure(state="normal")
+            self.v3_entry.configure(state="normal")
+            self.t3_entry.configure(state="normal")
+
         print(choice)
 
+
+    #***Funcion de boton calcular gauss-seidel
+    def fun_calBoton_gs (self):
+
+        if self.a11_entry.get() != "0" and self.a22_entry.get() != "0" and self.a33_entry.get() != "0":
+
+            if gs.funcion == 0:
+                if self.a11_entry.get() != "" and self.a12_entry.get() != "" and self.a13_entry.get() != "" and self.a21_entry.get() != "" and self.a22_entry.get() != "" and self.a23_entry.get() != "" and self.a31_entry.get() != "" and self.a32_entry.get() != "" and self.a33_entry.get() != "":
+                    gs.a11 = float(self.a11_entry.get())
+                    gs.a12 = float(self.a12_entry.get())
+                    gs.a13 = float(self.a13_entry.get())
+                    gs.a21 = float(self.a21_entry.get())
+                    gs.a22 = float(self.a22_entry.get())
+                    gs.a23 = float(self.a23_entry.get())
+                    gs.a31 = float(self.a31_entry.get())
+                    gs.a32 = float(self.a32_entry.get())
+                    gs.a33 = float(self.a33_entry.get())
+
+                    if self.tolerancia_entry.get() != "" and float(self.tolerancia_entry.get()) > 0:
+                        gs.tolerancia = float(self.tolerancia_entry.get())
+
+                    else:
+                        gs.tolerancia = 0.0001
+
+                    gs.x1 = float(self.v1_entry.get())
+                    gs.x2 = float(self.v2_entry.get())
+                    gs.x3 = float(self.v3_entry.get())
+
+                    gs.b1 = float(self.t1_entry.get())
+                    gs.b2 = float(self.t2_entry.get())
+                    gs.b3 = float(self.t3_entry.get())
+
+                    if gs.FunDiagDom3x3 :
+                        gs.gauss_seidel()
+                        print(gs.vectorS)
+
+                else:
+                    print("Debe llenar todos los campos de la matriz")
 
     def select_frame_by_name(self, name):
         # set button color for selected button
