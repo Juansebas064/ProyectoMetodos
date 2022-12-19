@@ -23,7 +23,7 @@ class App(customtkinter.CTk):
         super().__init__()
 
         
-        self.title("Newton Rapthson")
+        self.title("Newton Raphson")
         self.geometry(f"{1100}x{580}")
 
         
@@ -235,7 +235,7 @@ class App(customtkinter.CTk):
                                 if(tablaAll[0]==0):
                                     self.stringvar.set("verifique que la funcion este bien escrita ")
                                 else:
-                                    self.stringvar.set("La fUNCION NO CONVERGE ")
+                                    self.stringvar.set("LA FUNCION NO CONVERGE ")
                         else:
                             self.stringvar.set("La tolerancia debe ser un numero menor o igual a 0")
                     else:
