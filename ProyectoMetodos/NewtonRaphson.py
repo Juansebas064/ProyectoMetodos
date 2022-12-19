@@ -2,7 +2,7 @@
 # Ingeniería de sistemas - Univalle
 # Integrantes: 
 # Juan Felipe Arango Guzmán - 2060066 (Gauss-Seidel)
-# Carlos Eduardo Guerrero Jaramillo - 202060216 (Bisección)
+# Carlos Eduardo Guerrero Jaramillo - 2060216 (Bisección)
 # Miguel Ángel Rivera Reyes - 2059876 (Newton-Raphson)
 
 import numpy as np
