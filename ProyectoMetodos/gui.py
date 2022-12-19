@@ -1,3 +1,10 @@
+# Proyecto final métodos numéricos
+# Ingeniería de sistemas - Univalle
+# Integrantes: 
+# Juan Felipe Arango Guzmán - 2060066 (Gauss-Seidel)
+# Carlos Eduardo Guerrero Jaramillo - 202060216 (Bisección)
+# Miguel Ángel Rivera Reyes - 2059876 (Newton-Raphson)
+
 import os
 import punto_fijo as pf
 import gauss_seidel as gs
@@ -278,7 +285,7 @@ class App(customtkinter.CTk):
         self.puntoMedio=0.0
         self.iteraciones = 0
         self.error=0.0
-        self.f_c = 999999
+        self.f_c = 100
         self.lst = []
         self.tolerancia = 0.0
 
@@ -301,7 +308,7 @@ class App(customtkinter.CTk):
         self.entry_ok = customtkinter.CTkButton(master=self.biseccion_frame, width=85, text="Aceptar", command=self.get_all_biseccion)
         self.entry_ok.grid(row=5, column=0, pady=10, padx=10)
         self.entry_reset = customtkinter.CTkButton(master=self.biseccion_frame, width=85, text="Salir",
-                                                command=self.reset_all_fields, state="disabled")
+                                                command=self.reset_all_fields, state="normal")
         self.entry_reset.grid(row=6, column=0, pady=10, padx=10)
 
         # Grafico
@@ -318,8 +325,6 @@ class App(customtkinter.CTk):
         # Select default frame
         self.select_frame_by_name("punto_fijo")
 
-    def evaluar_punto_fijo(self,var):
-        return eval(var)
 
     # Función botón calcular punto fijo
     def calcular_punto_fijo(self):
@@ -336,6 +341,10 @@ class App(customtkinter.CTk):
         self.punto_fijo_logs.delete("1.0","end")
 
         if type(punto) != str:
+            self.grafica_punto_fijo.destroy()
+            self.grafica_punto_fijo = customtkinter.CTkCanvas(self.punto_fijo_frame)
+            self.grafica_punto_fijo.grid(row=2,column=1,padx=0,pady=(40,0),sticky="ew",rowspan=8)
+
             x = pf.symbols('x')
             fun = pf.lambdify(x, f)
             x1 = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
@@ -350,12 +359,11 @@ class App(customtkinter.CTk):
 
             chart = FigureCanvasTkAgg(fig, self.grafica_punto_fijo)
             chart.get_tk_widget().pack()
-
-            # grafico = pf.plot(sympify(x, f), (x, float(ext_i),float(ext_d)),show=False,size=(5,4),markers=[{'args': [punto, fun(punto), 'go']}])
-            # grafico.save("output.png")
-            # self.grafica_punto_fijo.configure(image=tk.PhotoImage(file=f"{image_path}/output.png"))
+            
         else:
-            self.grafica_punto_fijo.configure(image=None)
+            self.grafica_punto_fijo.destroy()
+            self.grafica_punto_fijo = customtkinter.CTkCanvas(self.punto_fijo_frame)
+            self.grafica_punto_fijo.grid(row=2,column=1,padx=0,pady=(40,0),sticky="ew",rowspan=8)
 
         for i in range(len(logs)):
             self.punto_fijo_logs.insert(f"{i+1}.0",logs[i])
@@ -369,12 +377,25 @@ class App(customtkinter.CTk):
 
         if choice == "2x2":
             gs.funcion = 1
+            self.a13_entry.delete(0,tk.END)
             self.a13_entry.configure(state="disabled")
+
+            self.a23_entry.delete(0,tk.END)
             self.a23_entry.configure(state="disabled")
+
+            self.a33_entry.delete(0,tk.END)
             self.a33_entry.configure(state="disabled")
+
+            self.a32_entry.delete(0,tk.END)
             self.a32_entry.configure(state="disabled")
+
+            self.a31_entry.delete(0,tk.END)
             self.a31_entry.configure(state="disabled")
+
+            self.v3_entry.delete(0,tk.END)
             self.v3_entry.configure(state="disabled")
+
+            self.t3_entry.delete(0,tk.END)
             self.t3_entry.configure(state="disabled")
 
         elif choice == "3x3":
@@ -421,11 +442,12 @@ class App(customtkinter.CTk):
                     gs.b2 = float(self.t2_entry.get())
                     gs.b3 = float(self.t3_entry.get())
 
-                    if gs.FunDiagDom3x3 :
+                    if gs.FunDiagDom3x3() :
                         gs.gauss_seidel()
                         print(gs.vectorS)
 
                         self.box_solucion.configure(state="normal")
+                        self.box_solucion.delete("1.0","end")
                         self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nx3 = {gs.x3}\nError = {gs.CalcularError()}")
                         self.box_solucion.configure(state="disabled")
                         
@@ -433,12 +455,14 @@ class App(customtkinter.CTk):
                     else:
                         print("La matriz debe ser diagonalmente dominante")
                         self.box_solucion.configure(state="normal")
+                        self.box_solucion.delete("1.0","end")
                         self.box_solucion.insert("0.0",text="La matriz debe ser diagonalmente dominante")
                         self.box_solucion.configure(state="disabled")
 
                 else:
                     print("Debe llenar todos los campos de la matriz")
                     self.box_solucion.configure(state="normal")
+                    self.box_solucion.delete("1.0","end")                    
                     self.box_solucion.insert("0.0",text="Debe llenar todos los campos de la matriz")
                     self.box_solucion.configure(state="disabled")
                     
@@ -462,11 +486,12 @@ class App(customtkinter.CTk):
                     gs.b1 = float(self.t1_entry.get())
                     gs.b2 = float(self.t2_entry.get())
 
-                    if gs.FunDiagDom2x2 :
+                    if gs.FunDiagDom2x2():
                         gs.gauss_seidel()
                         print(gs.vectorS)
 
                         self.box_solucion.configure(state="normal")
+                        self.box_solucion.delete("1.0","end")
                         self.box_solucion.insert("0.0",text=f"x1 = {gs.x1}\nx2 = {gs.x2}\nError = {gs.CalcularError()}")
                         self.box_solucion.configure(state="disabled")
                         
@@ -474,24 +499,38 @@ class App(customtkinter.CTk):
                     else:
                         print("La matriz debe ser diagonalmente dominante")
                         self.box_solucion.configure(state="normal")
+                        self.box_solucion.delete("1.0","end")
                         self.box_solucion.insert("0.0",text="La matriz debe ser diagonalmente dominante")
                         self.box_solucion.configure(state="disabled")
 
                 else:
                     print("Debe llenar todos los campos de la matriz")
                     self.box_solucion.configure(state="normal")
+                    self.box_solucion.delete("1.0","end")
                     self.box_solucion.insert("0.0",text="Debe llenar todos los campos de la matriz")
                     self.box_solucion.configure(state="disabled")
 
         else:
             print("La diagonal no debe tener 0")
             self.box_solucion.configure(state="normal")
-            self.box_solucion.insert("0.0",text="Debe llenar todos los campos de la matriz")
+            self.box_solucion.delete("1.0","end")
+            self.box_solucion.insert("0.0",text="La diagonal no debe tener 0")
             self.box_solucion.configure(state="disabled")
 
 
     # Función biseccion
     def get_all_biseccion(self):
+        
+        self.ecuacion = ""
+        self.Xa = 0.0
+        self.Xb = 0.0
+        self.puntoMedio=0.0
+        self.iteraciones = 0
+        self.error=0.0
+        self.f_c = 100
+        self.lst = []
+        self.tolerancia = 0.0
+
         self.ecuacion = self.entry_funcion.get()
         self.Xa = float(self.entry_cotaInferior.get())
         self.Xb = float(self.entry_cotaSuperior.get())
@@ -500,19 +539,39 @@ class App(customtkinter.CTk):
         self.total_rows = len(self.lst)
         self.total_columns = len(self.lst[0])
         self.Table(self.table_frame)
-        self.entry_ok.configure(state="disabled")
+        #self.entry_ok.configure(state="disabled")
         self.entry_reset.configure(state="normal")
 
     def funcion(self, x):
         return eval (self.ecuacion)
 
     def evaluacion(self):
+        # self.lst += [("Iteraciones", "An", "Bn", "Pn", "F(Pn)", "Error")]
+        # graphic = plt.Figure(figsize=(5,4))
+        # graph = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
+        # graphic.add_subplot(111).plot(graph, self.funcion(graph))
+        # chart = FigureCanvasTkAgg(graphic, self.grafico)
+        # chart.get_tk_widget().pack()
+
+        self.grafico.destroy()
+        self.grafico = customtkinter.CTkCanvas(self.biseccion_frame)
+        self.grafico.grid(row=2, column=1, rowspan=6)
+
         self.lst += [("Iteraciones", "An", "Bn", "Pn", "F(Pn)", "Error")]
-        graphic = plt.Figure(figsize=(5,4))
-        graph = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
-        graphic.add_subplot(111).plot(graph, self.funcion(graph))
-        chart = FigureCanvasTkAgg(graphic, self.grafico)
+        #graphic = plt.Figure(figsize=(5,4))
+        x1 = np.linspace((self.Xa - 10), (self.Xb + 10), 1000)
+
+        y = list(map(lambda x: self.funcion(x), x1))
+
+        fig = plt.figure(figsize=(5,4))
+        ax = fig.add_subplot(1, 1, 1)
+
+        plt.plot(x1, y)
+        plt.plot(self.puntoMedio, self.funcion(self.puntoMedio), marker="o")
+
+        chart = FigureCanvasTkAgg(fig, self.grafico)
         chart.get_tk_widget().pack()
+
         while abs(self.f_c) >= self.tolerancia:
             raizA = self.puntoMedio
             self.puntoMedio = (self.Xa + self.Xb) / 2
@@ -530,6 +589,8 @@ class App(customtkinter.CTk):
                 self.Xa = self.puntoMedio
             if abs(self.f_c) < self.tolerancia:
                 break
+            if self.iteraciones >= self.f_c:
+                break
         print("La raíz buscada es: ", self.puntoMedio)
         self.raizfinal = customtkinter.CTkLabel(self.table_frame, text=("La raíz buscada es aproximadamente: "+ str(self.puntoMedio)))
         self.raizfinal.grid(row=0, column=0, pady=25, columnspan=7)
@@ -537,6 +598,8 @@ class App(customtkinter.CTk):
 
     def Table(self, main):
         # code for creating
+        
+
 
         for i in range(self.total_rows):
             for j in range(self.total_columns):

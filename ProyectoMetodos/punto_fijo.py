@@ -1,8 +1,9 @@
-#
-# Juan Sebastián Ruiz Aguilar
-# Métodos numéricos
-# Univalle Tuluá
-#
+# Proyecto final métodos numéricos
+# Ingeniería de sistemas - Univalle
+# Integrantes: 
+# Juan Felipe Arango Guzmán - 2060066 (Gauss-Seidel)
+# Carlos Eduardo Guerrero Jaramillo - 202060216 (Bisección)
+# Miguel Ángel Rivera Reyes - 2059876 (Newton-Raphson)
 
 # Importamos las librerías necesarias
 #import sympy as sp
