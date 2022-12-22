@@ -4,6 +4,7 @@
 # Juan Felipe Arango Guzmán - 2060066 (Gauss-Seidel)
 # Carlos Eduardo Guerrero Jaramillo - 2060216 (Bisección)
 # Miguel Ángel Rivera Reyes - 2059876 (Newton-Raphson)
+# Juan Sebastián Ruiz Aguilar - 2059898 (Punto fijo)
 
 import tkinter
 import tkinter.messagebox

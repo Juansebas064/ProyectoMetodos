@@ -4,6 +4,7 @@
 # Juan Felipe Arango Guzmán - 2060066 (Gauss-Seidel)
 # Carlos Eduardo Guerrero Jaramillo - 2060216 (Bisección)
 # Miguel Ángel Rivera Reyes - 2059876 (Newton-Raphson)
+# Juan Sebastián Ruiz Aguilar - 2059898 (Punto fijo)
 
 import tkinter as tk
 
@@ -75,6 +76,7 @@ def Calcular3x3():
             
             x1anterior = x1
             x1 = (b1 -(a12*x2) -(a13*x3))/a11
+            print(f"x1={x1}")
 
         else:
             print("La posicion a11 no debe ser 0")
@@ -85,6 +87,7 @@ def Calcular3x3():
             
             x2anterior = x2
             x2 = (b2 -(a21*x1) -(a23*x3))/a22
+            print(f"x2={x2}")
 
         else:
             print("La posicion a22 no debe ser 0")
@@ -94,6 +97,7 @@ def Calcular3x3():
             
             x3anterior = x3
             x3 = (b3 -(a31*x1) -(a32*x2))/a33
+            print(f"x3={x3}\n")
 
         else:
             print("La posicion a33 no debe ser 0")
